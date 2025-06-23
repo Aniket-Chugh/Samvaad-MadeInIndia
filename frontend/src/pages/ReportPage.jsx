@@ -73,49 +73,58 @@ const MakeReport = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !description || !category || !photo) {
-      return alert("⚠️ All fields are required including category and image.");
-    }
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!title || !description || !category || !photo) {
+    return alert("⚠️ All fields are required including category and image.");
+  }
+  setLoading(true);
 
-    try {
-      const payload = {
-        title,
-        description,
-        category,
-        image_url: photo,
-        latitude,
-        longitude,
-        location,
-      };
+  try {
+    const payload = {
+      title,
+      description,
+      category,
+      image_url: photo,
+      latitude,
+      longitude,
+      location,
+    };
 
-      const res = await axios.post("http://localhost:3000/report", payload);
+    const res = await axios.post("http://localhost:3000/report", payload, {
+      withCredentials: true, // ✅ this sends cookies like JWT
+    });
 
-      if (res.data.image_status === "VALID") {
-        alert(`✅ Complaint submitted successfully!
+    if (res.data.image_status === "VALID") {
+      alert(`✅ Complaint submitted successfully!
 Priority: ${res.data.priority}
 Image Authenticity: ${res.data.image_status}`);
-        setTitle("");
-        setDescription("");
-        setCategory("");
-        setPhoto(null);
-      } else {
-        alert(`⚠️ Complaint Rejected!
+      setTitle("");
+      setDescription("");
+      setCategory("");
+      setPhoto(null);
+    } else {
+      alert(`⚠️ Complaint Rejected!
 Image Issue: ${res.data.image_status}`);
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.response?.data?.error?.includes("Image check failed")) {
-        alert(`❌ Image Issue: ${err.response.data.error}`);
-      } else {
-        alert("❌ Unexpected error while submitting report.");
-      }
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    if (err.response?.status === 401) {
+      alert("🔒 You must be logged in to submit a report. Please login or sign up.");
+      // Optional: redirect to login
+      // navigate("/signup"); // only if you import useNavigate and use it
+    }
+    if (err.response?.data?.error?.includes("Image check failed")) {
+      alert(`❌ Image Issue: ${err.response.data.error}`);
+    } else {
+
+      alert("❌ Unexpected error while submitting report.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="bg-gray-900 text-white min-h-screen">

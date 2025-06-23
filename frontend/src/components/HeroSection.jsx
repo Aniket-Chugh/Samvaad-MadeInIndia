@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 
 const HeroSection = () => {
   return (
@@ -17,11 +19,12 @@ const HeroSection = () => {
             through our secure, transparent digital platform. Making governance
             accessible to every citizen.
           </p>
-
           <div className="flex gap-4 flex-wrap">
+<Link to={"/report"}>
             <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
               File Your Complaint →
             </button>
+</Link>
             <button className="border border-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:border-gray-500">
               Learn More
             </button>

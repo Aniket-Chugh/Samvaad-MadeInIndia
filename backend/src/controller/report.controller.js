@@ -31,6 +31,18 @@ export const complaint = async (req, res) => {
             });
         }
 
+
+        console.log(title,
+            description,
+            category,
+            image_url,
+            latitude,
+            longitude,
+            location,
+            priority,
+            image_check,);
+
+
         const query = `
       INSERT INTO complaints
       (title, description, category, image_url, latitude, longitude, location, priority, image_status)

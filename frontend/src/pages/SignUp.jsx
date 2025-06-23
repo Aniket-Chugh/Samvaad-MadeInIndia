@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
+import { useAuth } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+    const {isAuthenticated} = useAuth();
+    const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,6 +21,11 @@ export default function Signup() {
 
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
   const [serverData, setServerData] = useState(null);
+
+
+if (isAuthenticated == true) {
+    navigate("/dashboard");
+}
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -147,14 +156,7 @@ export default function Signup() {
           </button>
         </form>
 
-        {serverData && (
-          <div className="mt-8 p-4 bg-white shadow-lg rounded-lg w-full max-w-2xl text-sm text-left">
-            <h3 className="font-semibold text-lg mb-2 text-blue-700">✅ Server Response:</h3>
-            <pre className="whitespace-pre-wrap break-all">
-              {JSON.stringify(serverData, null, 2)}
-            </pre>
-          </div>
-        )}
+
       </div>
       <Footer />
     </div>

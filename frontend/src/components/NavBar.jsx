@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Menu, X, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 const Navbar = () => {
+    const {isAuthenticated} = useAuth()
   const [open, setOpen] = useState(false);
 
   const navItems = [
@@ -40,12 +42,24 @@ const Navbar = () => {
                 {item.name}
               </a>
             ))}
-            <Link
+
+{
+    isAuthenticated ?  <Link
+              to="/dashboard"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition"
+            >
+             DashBoard
+            </Link> :  <Link
               to="/signup"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition"
             >
              Get Started
             </Link>
+}
+
+
+
+
           </div>
 
           {/* Mobile Menu Toggle */}

@@ -3,24 +3,35 @@ import axios from "axios";
 import Footer from "../components/Footer";
 import Navbar from "../components/NavBar";
 import LeftSidebar from "../components/LeftSidebar";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [reports, setReports] = useState([]);
   const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Fetch complaints based on location
+  const navigate = useNavigate();
+
   const fetchReportsByDistrict = async (location) => {
     try {
-      const res = await axios.post("http://localhost:3000/bydistrict", { location },  { withCredentials: true }
-);
+      setLoading(true);
+      const res = await axios.post(
+        "http://localhost:3000/bydistrict",
+        { location },
+        { withCredentials: true }
+      );
       console.log("📦 Reports fetched:", res.data);
       setReports(res.data);
     } catch (err) {
       console.error("District fetch failed:", err);
+      if (err.response && err.response.status === 401) {
+        navigate("/signup");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Reverse geocode to get location
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -31,18 +42,18 @@ export default function Dashboard() {
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
           );
           const geoData = await geoRes.json();
-          setLocation(geoData.display_name); // 📍 Set full address string
+          setLocation(geoData.display_name);
         } catch (err) {
           console.error("Geocoding failed:", err);
         }
       },
       (err) => {
         console.warn("Location error:", err.message);
+        setLoading(false);
       }
     );
   }, []);
 
-  // Trigger fetch when location is updated
   useEffect(() => {
     if (location) {
       console.log("📍 Updated location:", location);
@@ -52,11 +63,15 @@ export default function Dashboard() {
 
   const handleVote = async (id, type) => {
     try {
-      await axios.post("http://localhost:3000/voting", {
-        complaint_id: id,
-        type: type,
-      });
-      fetchReportsByDistrict(location); // Refresh after vote
+      await axios.post(
+        "http://localhost:3000/voting",
+        {
+          complaint_id: id,
+          type: type,
+        },
+        { withCredentials: true }
+      );
+      fetchReportsByDistrict(location);
     } catch (err) {
       console.error("Vote failed:", err);
     }
@@ -70,71 +85,81 @@ export default function Dashboard() {
         <main className="flex-1 px-4 py-6">
           <h1 className="text-2xl font-bold text-center mb-2">
             📍 Complaints from:{" "}
-            <span className="text-blue-600">
-              {location || "your area"}
-            </span>
+            <span className="text-blue-600">{location || "your area"}</span>
           </h1>
 
-          <div className="space-y-4 max-w-3xl mx-auto">
-            {reports.map((post) => (
-              <div
-                key={post.id}
-                className="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4"
-              >
-                <div className="flex sm:flex-col items-center justify-between sm:justify-center text-center">
-                  <button
-                    onClick={() => handleVote(post.id, "upvote")}
-                    className="text-xl text-green-600 hover:scale-110"
-                  >
-                    ↑
-                  </button>
-                  <span className="font-semibold text-sm">
-                    {(post.upvote || 0) - (post.downvote || 0)}
-                  </span>
-                  <button
-                    onClick={() => handleVote(post.id, "downvote")}
-                    className="text-xl text-red-600 hover:scale-110"
-                  >
-                    ↓
-                  </button>
-                </div>
+          {/* 🔄 Loading Spinner */}
+          {loading ? (
+            <div className="flex justify-center items-center h-96">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+            </div>
+          ) : (
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {reports.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4"
+                >
+                  <div className="flex sm:flex-col items-center justify-between sm:justify-center text-center">
+                    <button
+                      onClick={() => handleVote(post.id, "upvote")}
+                      className="text-xl text-green-600 hover:scale-110"
+                    >
+                      ↑
+                    </button>
+                    <span className="font-semibold text-sm">
+                      {(post.upvote || 0) - (post.downvote || 0)}
+                    </span>
+                    <button
+                      onClick={() => handleVote(post.id, "downvote")}
+                      className="text-xl text-red-600 hover:scale-110"
+                    >
+                      ↓
+                    </button>
+                  </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <img
-                      src={
-                        post.profile_photo ||
-                        "https://api.dicebear.com/7.x/personas/svg?seed=Citizen"
-                      }
-                      alt="User"
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                    <div className="text-sm font-medium text-gray-800">
-                      {post.name || "Anonymous User"}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <img
+                        src={
+                          post.profile_photo ||
+                          "https://api.dicebear.com/7.x/personas/svg?seed=Citizen"
+                        }
+                        alt="User"
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <div className="text-sm font-medium text-gray-800">
+                        {post.name || "Anonymous User"}
+                      </div>
+                      <div className="text-sm font-medium text-gray-800">
+                        {post.priority}
+                      </div>
+                    </div>
+
+                    <h2 className="text-lg font-bold text-gray-900">
+                      {post.title}
+                    </h2>
+                    <p className="text-gray-700 text-sm mt-1">
+                      {post.description}
+                    </p>
+
+                    {post.image_url && (
+                      <img
+                        src={post.image_url}
+                        alt="Evidence"
+                        className="mt-3 rounded-md max-h-60 w-full object-cover"
+                      />
+                    )}
+
+                    <div className="text-xs text-gray-500 mt-2">
+                      📍 {post.location || "Unknown"} • 🕒{" "}
+                      {new Date(post.created_at).toLocaleString()}
                     </div>
                   </div>
-
-                  <h2 className="text-lg font-bold text-gray-900">
-                    {post.title}
-                  </h2>
-                  <p className="text-gray-700 text-sm mt-1">{post.description}</p>
-
-                  {post.image_url && (
-                    <img
-                      src={post.image_url}
-                      alt="Evidence"
-                      className="mt-3 rounded-md max-h-60 w-full object-cover"
-                    />
-                  )}
-
-                  <div className="text-xs text-gray-500 mt-2">
-                    📍 {post.location || "Unknown"} • 🕒{" "}
-                    {new Date(post.created_at).toLocaleString()}
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </main>
 
         <aside className="hidden lg:block w-72 bg-white p-4 shadow h-screen sticky top-0">

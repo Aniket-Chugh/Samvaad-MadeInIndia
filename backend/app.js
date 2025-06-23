@@ -32,6 +32,13 @@ app.use("/voting", Voterouter);
 app.use("/signup", authRouter);
 
 
+app.get("/api/me", authMiddleware, (req, res) => {
+    res.json({
+        success: true,
+        user: req.user,
+    });
+});
+
 app.get("/currentusercomplaints", authMiddleware, (req, res) => {
     const userId = req.user;
     const query = `
@@ -107,26 +114,7 @@ app.post("/bydistrict", authMiddleware, (req, res) => {
     });
 });
 
-// Fetch all complaints (GET)
-app.get("/report/all", (req, res) => {
-    const query = `
-    SELECT *,
-      (upvote - downvote) AS score,
-      CASE
-        WHEN (upvote - downvote) < 0 THEN 'fake'
-        ELSE 'valid'
-      END AS status
-    FROM complaints
-    ORDER BY score DESC, downvote ASC
-  `;
-    db.query(query, (err, result) => {
-        if (err) {
-            console.error("❌ DB error while fetching complaints:", err);
-            return res.status(500).json({ error: "Database error" });
-        }
-        res.json(result);
-    });
-});
+
 
 // Server start
 app.listen(port, () => {
