@@ -40,7 +40,9 @@ app.get("/api/me", authMiddleware, (req, res) => {
 });
 
 app.get("/currentusercomplaints", authMiddleware, (req, res) => {
-    const userId = req.user;
+    const userId = req.user.id;
+    console.log("User ID:", userId);
+
     const query = `
     SELECT *
     FROM complaints

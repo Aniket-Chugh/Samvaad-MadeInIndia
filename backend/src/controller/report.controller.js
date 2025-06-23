@@ -5,6 +5,9 @@ import {
 } from "../controller/prioritycheck.controller.js";
 
 export const complaint = async (req, res) => {
+
+    const userId = req.user.id;
+
     try {
         const {
             title,
@@ -45,8 +48,8 @@ export const complaint = async (req, res) => {
 
         const query = `
       INSERT INTO complaints
-      (title, description, category, image_url, latitude, longitude, location, priority, image_status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (title, description, category, image_url, latitude, longitude, location, priority, image_status , user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ?)
     `;
 
         const values = [
@@ -59,6 +62,7 @@ export const complaint = async (req, res) => {
             location,
             priority,
             image_check,
+            userId
         ];
 
         db.query(query, values, (err, result) => {
