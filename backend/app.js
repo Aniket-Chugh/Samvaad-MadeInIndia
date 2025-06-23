@@ -92,6 +92,7 @@ app.post("/trending", authMiddleware, (req, res) => {
 
 app.post("/bydistrict", authMiddleware, (req, res) => {
     const { location } = req.body;
+    const userName = req.user.name;
     console.log("📍 District requested:", location);
 
     if (!location) {
@@ -112,7 +113,10 @@ app.post("/bydistrict", authMiddleware, (req, res) => {
             console.error("❌ DB error in /bydistrict:", err);
             return res.status(500).json({ error: "Database error", details: err.message });
         }
-        res.json(results);
+        res.json({
+            user: userName,
+            complaints: results,
+        });
     });
 });
 

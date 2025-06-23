@@ -13,7 +13,7 @@ const CurrentUserComplaints = () => {
     try {
       const res = await axios.get(
         "http://localhost:3000/currentusercomplaints",
-        { withCredentials: true } 
+        { withCredentials: true }
       );
       setReports(res.data);
       if (res.data.length > 0) setLocation(res.data[0].location || "");
@@ -53,7 +53,16 @@ const CurrentUserComplaints = () => {
                     <div className="text-sm font-medium text-gray-800">
                       {post.name || "Anonymous User"}
                     </div>
+
+
+<div className="text-sm font-medium text-gray-800">
+                      {post.status || "Anonymous User"}
+                    </div>
+
                   </div>
+
+
+
 
                   <h2 className="text-lg font-bold text-gray-900">{post.title}</h2>
                   <p className="text-gray-700 text-sm mt-1">{post.description}</p>

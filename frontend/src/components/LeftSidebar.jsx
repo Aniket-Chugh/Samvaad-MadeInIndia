@@ -24,6 +24,10 @@ const LeftSidebar = () => {
         <Link to="/dashboard/support" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-pink-700 transition">
           📞 Support
         </Link>
+
+        <Link to="/dashboard/forum" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-pink-50 hover:text-pink-700 transition">
+          Dissussion Room
+        </Link>
       </nav>
     </aside>
 

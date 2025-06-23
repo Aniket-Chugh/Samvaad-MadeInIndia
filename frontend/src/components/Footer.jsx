@@ -6,7 +6,6 @@ const Footer = () => {
     <footer className="bg-blue-600 text-white mt-10">
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        {/* About */}
         <div>
           <h2 className="text-lg font-semibold mb-2">About</h2>
           <p className="text-sm text-gray-100">
@@ -14,7 +13,6 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Quick Links */}
         <div>
           <h2 className="text-lg font-semibold mb-2">Quick Links</h2>
           <ul className="space-y-1 text-sm">
@@ -36,7 +34,7 @@ const Footer = () => {
 
       {/* Bottom strip */}
       <div className="text-center text-sm py-3 bg-blue-700">
-        &copy; {new Date().getFullYear()} eGovernance System. All rights reserved.
+        &copy; {new Date().getFullYear()} SAMVAAD. All rights reserved.
       </div>
     </footer>
   );

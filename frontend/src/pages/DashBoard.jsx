@@ -9,6 +9,8 @@ export default function Dashboard() {
   const [reports, setReports] = useState([]);
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userName , setUserName] = useState("");
+  const [time , setTime] = useState("");
 
   const navigate = useNavigate();
 
@@ -21,7 +23,13 @@ export default function Dashboard() {
         { withCredentials: true }
       );
       console.log("📦 Reports fetched:", res.data);
-      setReports(res.data);
+      setReports(res.data.complaints);
+      setUserName(res.data.user);
+
+
+
+
+
     } catch (err) {
       console.error("District fetch failed:", err);
       if (err.response && err.response.status === 401) {
@@ -77,6 +85,13 @@ export default function Dashboard() {
     }
   };
 
+  const uploadtime = (time)=>{
+   return new Date(time).toLocaleString('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+  }
+
   return (
     <div>
       <Navbar />
@@ -84,7 +99,7 @@ export default function Dashboard() {
         <LeftSidebar />
         <main className="flex-1 px-4 py-6">
           <h1 className="text-2xl font-bold text-center mb-2">
-            📍 Complaints from:{" "}
+            📍 Hi , <span className="text-blue-600">{userName}</span> Complaints from:{" "}
             <span className="text-blue-600">{location || "your area"}</span>
           </h1>
 
@@ -129,7 +144,7 @@ export default function Dashboard() {
                         className="h-8 w-8 rounded-full object-cover"
                       />
                       <div className="text-sm font-medium text-gray-800">
-                        {post.name || "Anonymous User"}
+                        {post.user_id || "Anonymous User"}
                       </div>
                       <div className="text-sm font-medium text-gray-800">
                         {post.priority}
@@ -153,7 +168,9 @@ export default function Dashboard() {
 
                     <div className="text-xs text-gray-500 mt-2">
                       📍 {post.location || "Unknown"} • 🕒{" "}
-                      {new Date(post.created_at).toLocaleString()}
+
+ {uploadtime(post.submitted_at)}
+
                     </div>
                   </div>
                 </div>
