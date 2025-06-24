@@ -55,8 +55,16 @@ export const checkImageAuthenticity = async (imageUrl, description) => {
         },
         {
             text: `This image is attached to a citizen complaint with the description: "${description}".
-Judge if the image is VALID, AI-GENERATED, COPIED_FROM_WEB, or UNRELATED_TO_DESCRIPTION.
-Respond ONLY with one of these options: VALID, AI-GENERATED, COPIED_FROM_WEB, UNRELATED_TO_DESCRIPTION.`,
+
+            **Critically assess this image's origin. Prioritize "COPIED_FROM_WEB" unless there are clear indicators of originality.**
+
+            **Possible Categories:**
+            - **COPIED_FROM_WEB:** Does this image appear to be a generic, widely available, or professionally taken image found online (e.g., stock photo, news article image, general web content)? Look for: lack of unique context, general subject matter, absence of personal touch, or a clean/staged look often associated with internet imagery. Assume this if there's no strong evidence of it being an original, spontaneous capture.
+            - **VALID:** Does this image strongly suggest it's a unique, original photograph taken directly by a citizen (e.g., showing very specific local context, a clear personal perspective, or unedited, raw details typical of a mobile phone capture)? Only choose VALID if the evidence for originality is compelling.
+            - **AI-GENERATED:** Does the image exhibit any unnatural features, distortions, or patterns characteristic of AI synthesis?
+            - **UNRELATED_TO_DESCRIPTION:** Is the visual content of the image completely irrelevant to the provided complaint description?
+
+            **Respond ONLY with one of these exact words:** VALID, AI-GENERATED, COPIED_FROM_WEB, UNRELATED_TO_DESCRIPTION.`,
         },
     ]);
 

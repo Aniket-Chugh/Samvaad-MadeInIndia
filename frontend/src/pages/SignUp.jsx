@@ -57,15 +57,59 @@ export default function Signup() {
         reader.onloadend = () => {
           setFormData((prev) => ({ ...prev, [name]: reader.result }));
         };
-        reader.readAsDataURL(file); // base64
+        reader.readAsDataURL(file);
       }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
+  const validateForm = () => {
+    const { name, email, phone, password, address, city, state, pincode, role, department, gov_id, gov_proof, profile_photo } = formData;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+    const pincodeRegex = /^[0-9]{6}$/;
+
+    if (!name || !email || !phone || !password || !address || !city || !state || !pincode || !profile_photo) {
+      alert("❌ Please fill all the required fields.");
+      return false;
+    }
+
+    if (!emailRegex.test(email)) {
+      alert("❌ Invalid email format.");
+      return false;
+    }
+
+    if (!phoneRegex.test(phone)) {
+      alert("❌ Phone number must be 10 digits.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      alert("❌ Password must be at least 6 characters.");
+      return false;
+    }
+
+    if (!pincodeRegex.test(pincode)) {
+      alert("❌ Invalid pincode format.");
+      return false;
+    }
+
+    if (role === "government") {
+      if (!department || !gov_id || !gov_proof) {
+        alert("❌ Please fill all government official fields.");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     const finalData = {
       ...formData,
@@ -99,26 +143,16 @@ export default function Signup() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="flex justify-center items-center py-10">
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-lg shadow-md w-full max-w-md space-y-4"
+          className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg space-y-4 border-t-8 border-blue-500"
         >
-          <h2 className="text-2xl font-bold text-center text-gray-800">Register</h2>
+          <h2 className="text-3xl font-bold text-center text-blue-700">Register for Complaint Portal</h2>
 
-          {/* Common Inputs */}
-          {[
-            { name: "name", placeholder: "Full Name" },
-            { name: "email", placeholder: "Email", type: "email" },
-            { name: "phone", placeholder: "Phone" },
-            { name: "password", placeholder: "Password", type: "password" },
-            { name: "address", placeholder: "Address" },
-            { name: "city", placeholder: "City" },
-            { name: "state", placeholder: "State" },
-            { name: "pincode", placeholder: "Pincode" },
-          ].map((input) => (
+          {[{ name: "name", placeholder: "Full Name" }, { name: "email", placeholder: "Email", type: "email" }, { name: "phone", placeholder: "Phone" }, { name: "password", placeholder: "Password", type: "password" }, { name: "address", placeholder: "Address" }, { name: "city", placeholder: "City" }, { name: "state", placeholder: "State" }, { name: "pincode", placeholder: "Pincode" }].map((input) => (
             <input
               key={input.name}
               type={input.type || "text"}
@@ -131,11 +165,8 @@ export default function Signup() {
             />
           ))}
 
-          {/* Role Selector */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Registering as
-            </label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Registering as</label>
             <select
               name="role"
               value={formData.role}
@@ -148,7 +179,6 @@ export default function Signup() {
             </select>
           </div>
 
-          {/* Extra fields if government */}
           {formData.role === "government" && (
             <>
               <input
@@ -169,9 +199,7 @@ export default function Signup() {
                 className="w-full px-4 py-2 border rounded-md"
                 required
               />
-              <label className="text-sm text-gray-700 block">
-                Upload Government ID Proof
-              </label>
+              <label className="text-sm text-gray-700 block mt-1">Upload Government ID Proof</label>
               <input
                 type="file"
                 name="gov_proof"
@@ -183,8 +211,7 @@ export default function Signup() {
             </>
           )}
 
-          {/* Profile photo */}
-          <label className="text-sm text-gray-700 block">Profile Photo</label>
+          <label className="text-sm text-gray-700 block">Upload Profile Photo</label>
           <input
             type="file"
             name="profile_photo"
@@ -198,24 +225,19 @@ export default function Signup() {
             <img
               src={formData.profile_photo}
               alt="Preview"
-              className="h-24 w-24 object-cover rounded-full mx-auto mt-2"
+              className="h-24 w-24 object-cover rounded-full mx-auto mt-2 border"
             />
           )}
 
-          {/* Location */}
           {location.latitude && (
-            <p className="text-sm text-gray-600">
-              📍 Location:{" "}
-              <strong>
-                {location.latitude}, {location.longitude}
-              </strong>
+            <p className="text-sm text-gray-600 text-center">
+              📍 Location: <strong>{location.latitude}, {location.longitude}</strong>
             </p>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300 font-semibold"
           >
             Register
           </button>

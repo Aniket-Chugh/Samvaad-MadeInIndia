@@ -6,7 +6,7 @@ import Reportrouter from "./src/routes/report.route.js";
 import Voterouter from "./src/routes/vote.route.js";
 import authRouter from "./src/routes/Registerauth.route.js";
 import { authMiddleware } from "./src/middleware/authMiddleware.middleware.js";
-
+import discussionRoutes from "./src/routes/discussions.routes.js";
 
 
 
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
 app.use("/report", Reportrouter);
 app.use("/voting", Voterouter);
 app.use("/signup", authRouter);
+app.use("/discussions", discussionRoutes);
 
 
 app.get("/api/me", authMiddleware, (req, res) => {
@@ -58,6 +59,33 @@ app.get("/currentusercomplaints", authMiddleware, (req, res) => {
         res.json(result);
     });
 });
+
+
+app.post("/update", authMiddleware, async (req, res) => {
+    const id = req.user.id;
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+        return res.status(400).json({ error: "Name and email are required" });
+    }
+
+    try {
+        const [result] = await db.promise().query(
+            "UPDATE users SET name = ?, email = ? WHERE id = ?",
+            [name, email, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Complaint not found" });
+        }
+
+        res.json({ message: "Complaint updated successfully!" });
+    } catch (error) {
+        console.error("Update error:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 
 app.get("/profile", authMiddleware, (req, res) => {
     const userId = req.user;
@@ -88,6 +116,8 @@ app.post("/trending", authMiddleware, (req, res) => {
         res.json(result);
     });
 });
+
+
 
 
 app.post("/bydistrict", authMiddleware, (req, res) => {
