@@ -62,9 +62,9 @@ An **AI-powered citizen complaint platform** that helps people easily report loc
 
 ## 🧑‍💻 Contributors
 
-- [Your Name](https://github.com/YourGitHubUsername) — Developer, Project Lead  
-- [Team Member Names if any]
-
+- oneaniket13@gmail.com (leader)
+- khanna.simran.900@gmail.com
+- ankeshamar8@gmail.com
 ---
 
 ## 📣 Final Note
@@ -73,5 +73,5 @@ This project makes it easier for citizens to raise their voice and easier for au
 
 ---
 
-> *"Smart governance starts with smarter complaint handling — e-Govern makes it possible."*
+> *"Smart governance starts with smarter complaint handling — samvaad makes it possible."*
 
